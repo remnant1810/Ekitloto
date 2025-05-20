@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:dream_journal/screens/privacy_policy_screen.dart';
+import 'package:dream_journal/screens/terms_of_service_screen.dart';
 import '../main.dart';
 import '../utils/pdf_export.dart';
 
@@ -154,17 +157,115 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
           // About Us
+          const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
-            child: const Card(
-              margin: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-              shape: RoundedRectangleBorder(
+            child: Card(
+              margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(0)),
               ),
-              child: ListTile(
-                leading: Icon(Icons.info_outline, color: iconColor),
-                title: Text('About Us'),
-                subtitle: Text('Dream Journal App v1.0\nCreated by Your Team')
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16, top: 16, right: 16, bottom: 8),
+                    child: Text(
+                      'About Dream Journal',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.info_outline, color: iconColor),
+                    title: const Text('Version'),
+                    subtitle: const Text('1.0.0'),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.update, color: Colors.blue),
+                      onPressed: () {
+                        // TODO: Implement check for updates
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Checking for updates...')),
+                        );
+                      },
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.copyright, color: iconColor),
+                    title: const Text('Copyright'),
+                    subtitle: const Text('© 2025 Dream Journal Team'),
+                    onTap: () {
+                      // TODO: Show copyright information
+                    },
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.privacy_tip, color: iconColor),
+                    title: const Text('Privacy Policy'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PrivacyPolicyScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.description, color: iconColor),
+                    title: const Text('Terms of Service'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TermsOfServiceScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.email, color: iconColor),
+                    title: const Text('Contact Us'),
+                    subtitle: const Text('support@dreamjournal.app'),
+                    onTap: () async {
+                      final Uri emailLaunchUri = Uri(
+                        scheme: 'mailto',
+                        path: 'support@dreamjournal.app',
+                        query: 'subject=Dream Journal Support',
+                      );
+                      
+                      try {
+                        final url = emailLaunchUri.toString();
+                        if (await canLaunchUrl(emailLaunchUri)) {
+                          await launchUrl(emailLaunchUri);
+                        } else {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Could not launch email client'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error: ${e.toString()}'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ],
               ),
             ),
           ),
